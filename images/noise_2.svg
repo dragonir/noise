@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 1000 1000">
+  <defs>
+    <filter id="noise-filter">
+      <feTurbulence baseFrequency="0.2" stitchTiles="stitch"></feTurbulence>
+      <feColorMatrix type="luminanceToAlpha"></feColorMatrix>
+    </filter>
+</defs>
+
+  <rect x="0" y="0" width="1000" height="1000" filter="url(#noise-filter)"/>
+</svg>

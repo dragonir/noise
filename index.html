@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOISE 噪点</title>
+  <link rel="shortcut icon" href="./images/logo.png">
+  <link rel="apple-touch-icon" href="./images/logo.png"/>
+  <link rel="apple-touch-icon-precomposed" href="./images/logo.png">
+  <link rel="Bookmark" href="./images/logo.png" />
+  <style>
+    :root {
+      --black: #000000;
+      --blue: #0072ff;
+      --green: #03c03c;
+      --yellow: #fffc00;
+      --red: #ff4b2b;
+      --orange: #f5af19;
+      --pink: #ee9ca7;
+      --purple: #A770EF;
+    }
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    html, body {
+      background: linear-gradient(135deg, #222, #111);
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    *::-webkit-scrollbar {
+      width: 2px !important;
+      background: 0 0 !important;
+      cursor: pointer !important
+    }
+    *::-webkit-scrollbar-thumb {
+      background-color: rgba(3, 192, 60, .5) !important;
+      border-radius: 2px !important;
+      border-color: transparent !important;
+      border-style: solid !important;
+      border-width: 1px !important;
+      background-clip: padding-box !important
+    }
+    *::-webkit-scrollbar-thumb:active {
+      background-color: rgba(3, 192, 60, .5) !important
+    }
+    *::-webkit-scrollbar-thumb:active,body.platform-win32 ::-webkit-scrollbar-thumb:hover {
+      border-width: 1px !important;
+      background-color: rgba(3, 192, 60, .5) !important;
+      cursor: pointer !important
+    }
+    h1, h2 {
+      color: rgba(255, 255, 255, .6);
+      line-height: 3;
+    }
+    h1 {
+      position: absolute;
+      font-size: 80px;
+      width: 100%;
+      height: 200px;
+      line-height: 200px;
+      text-align: center;
+      left: 0;
+      top: 0;
+      color: #03c03c;
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, .4);
+      padding: 24px 0;
+      z-index: 2;
+    }
+    h1::before, h1::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    h1::before {
+      background: radial-gradient(circle at 50%, transparent 30%, #6cc9ff77 60%);
+      -webkit-mask: url('./images/noise.png'), radial-gradient(circle at 50%, transparent 30%, #000 70%);
+      mask: url('./images/noise.png'), radial-gradient(circle at 50%, transparent 30%, #000 70%);
+    }
+    h1::after {
+      -webkit-mask-image: url('./images/noise.png'), linear-gradient(45deg, #000 0%, transparent 25%, transparent 75%, #000 100%);
+      mask-image: url('./images/noise.png'), linear-gradient(45deg, #000 0%, transparent 25%, transparent 75%, #000 100%);
+      background: linear-gradient(45deg, #7b7bf593 10%, transparent 25%, transparent 75%, #09f14fa8 90%);
+    }
+    .box {
+      margin: 36px auto;
+      width: 1000px;
+      border: 1px dashed rgba(255, 255, 255, .2);
+      border-radius: 8px;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .box .noises {
+      display: flex;
+      justify-content: space-between;
+    }
+    .box .noises .noise {
+      width: 19%;
+      height: 180.5px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<h1>噪 NOISE 点</h1>
+
+<style>
+svg {
+  height: 180px;
+  width: 180px;
+  border-radius: 50%;
+  margin: 28px auto 24px;
+  opacity: .8;
+}
+</style>
+<svg viewBox="0 0 200 200" xmlns='http://www.w3.org/2000/svg'>
+  <filter id='noiseFilter'>
+    <feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch' />
+  </filter>
+  <rect width='100%' height='100%' filter='url(#noiseFilter)' />
+</svg>
+
+<style>
+.bg {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200vh;
+  background: transparent url('./images/noise-transparent.png') repeat 0 0;
+  background-repeat: repeat;
+  animation: bg-animation .2s infinite;
+  opacity: .9;
+  visibility: visible;
+}
+@keyframes bg-animation {
+  0% { transform: translate(0,0) }
+  10% { transform: translate(-5%,-5%) }
+  20% { transform: translate(-10%,5%) }
+  30% { transform: translate(5%,-10%) }
+  40% { transform: translate(-5%,15%) }
+  50% { transform: translate(-10%,5%) }
+  60% { transform: translate(15%,0) }
+  70% { transform: translate(0,10%) }
+  80% { transform: translate(-15%,0) }
+  90% { transform: translate(10%,5%) }
+  100% { transform: translate(5%,0) }
+}
+</style>
+<div class="bg"></div>
+
+<style>
+.noise_0:nth-of-type(1) {
+  background: linear-gradient(to right bottom, var(--black), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_0:nth-of-type(2) {
+  background: linear-gradient(to right, var(--blue), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_0:nth-of-type(3) {
+  background: linear-gradient(to bottom, var(--green), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_0:nth-of-type(4) {
+  background: linear-gradient(to left, var(--yellow), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_0:nth-of-type(5) {
+  background: linear-gradient(to top, var(--red), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+</style>
+<div class="box">
+  <h2>基础</h2>
+  <div class="noises">
+    <div class="noise noise_0"></div>
+    <div class="noise noise_0"></div>
+    <div class="noise noise_0"></div>
+    <div class="noise noise_0"></div>
+    <div class="noise noise_0"></div>
+  </div>
+</div>
+
+<style>
+.noise_1:nth-of-type(1) {
+  background: linear-gradient(to right bottom, var(--black), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_1:nth-of-type(2) {
+  background: linear-gradient(to right, var(--blue), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_1:nth-of-type(3) {
+  background: linear-gradient(to bottom, var(--green), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_1:nth-of-type(4) {
+  background: linear-gradient(to left, var(--yellow), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_1:nth-of-type(5) {
+  background: linear-gradient(to top, var(--red), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_1 {
+  filter: contrast(200%) brightness(150%);
+}
+</style>
+<div class="box">
+  <h2>高对比度</h2>
+  <div class="noises">
+    <div class="noise noise_1"></div>
+    <div class="noise noise_1"></div>
+    <div class="noise noise_1"></div>
+    <div class="noise noise_1"></div>
+    <div class="noise noise_1"></div>
+  </div>
+</div>
+
+<style>
+.noise_2 {
+  position: relative;
+}
+.noise_2 .isolate {
+  isolation: isolate;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.noise_2 .overlay {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--purple);
+  mix-blend-mode: multiply;
+}
+.noise_2 .gradient {
+  height: 100%;
+  width: 100%;
+  filter: contrast(200%) brightness(150%);
+}
+.noise_2:nth-of-type(1) .gradient {
+  background: linear-gradient(to right bottom, var(--black), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_2:nth-of-type(2) .gradient {
+  background: linear-gradient(to right, var(--blue), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_2:nth-of-type(3) .gradient {
+  background: linear-gradient(to bottom, var(--green), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_2:nth-of-type(4) .gradient {
+  background: linear-gradient(to left, var(--yellow), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+.noise_2:nth-of-type(5) .gradient {
+  background: linear-gradient(to top, var(--red), rgba(0, 0, 0, 0)), url('./images/noise.svg');
+}
+</style>
+
+<div class="box">
+  <h2>基础：双色</h2>
+  <div class="noises">
+    <div class="noise noise_2">
+      <div class="isolate">
+        <div class="gradient"></div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+    <div class="noise noise_2">
+      <div class="isolate">
+        <div class="gradient"></div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+    <div class="noise noise_2">
+      <div class="isolate">
+        <div class="gradient"></div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+    <div class="noise noise_2">
+      <div class="isolate">
+        <div class="gradient"></div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+    <div class="noise noise_2">
+      <div class="isolate">
+        <div class="gradient"></div>
+        <div class="overlay"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+.noise_4 {
+  border-radius: 50% !important;
+}
+.noise_4:nth-of-type(1) {
+  background: var(--black);
+}
+.noise_4:nth-of-type(2) {
+  background: var(--blue);
+}
+.noise_4:nth-of-type(3) {
+  background: var(--green);
+}
+.noise_4:nth-of-type(4) {
+  background: var(--yellow);
+}
+.noise_4:nth-of-type(5) {
+  background: var(--red);
+}
+.noise_4 .gradient {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 100% 0, transparent 20%, #cccccc 80%);
+  mask: url('./images/noise_2.svg'), radial-gradient(circle at 100% 0, transparent 10%, #000 60%);
+}
+</style>
+
+<div class="box">
+  <h2>基础：圆形</h2>
+  <div class="noises">
+    <div class="noise noise_4"><div class="gradient"></div></div>
+    <div class="noise noise_4"><div class="gradient"></div></div>
+    <div class="noise noise_4"><div class="gradient"></div></div>
+    <div class="noise noise_4"><div class="gradient"></div></div>
+    <div class="noise noise_4"><div class="gradient"></div></div>
+  </div>
+</div>
+
+<style>
+.noise_5 {
+  position: relative;
+  overflow: unset !important;
+}
+.noise_5 .ball {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 20;
+}
+.noise_5 .isolate {
+  isolation: isolate;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+.noise_5 .ball-shadow {
+  height: 100%;
+  background: radial-gradient(circle at 65% 35%, rgba(0, 0, 0, 0), mediumblue), url('./images/noise.svg');     
+  filter: contrast(120%) brightness(900%);
+}
+.noise_5 .ground {
+  position: absolute;
+  width: 150%;
+  height: 140px;
+  bottom: -10px;
+  left: -65%;
+  transform: rotateZ(7deg);
+  mix-blend-mode: multiply;
+}
+.noise_5 .ground-shadow {
+  width: 95%;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 70%, navy, rgba(0, 0, 0, 0)), url('./images/noise.svg');
+  filter: contrast(150%) brightness(700%);
+}
+.noise_5 .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: multiply;
+}
+.noise_5:nth-of-type(1) .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 67% 30%, #ccc, var(--black));
+  mix-blend-mode: multiply;
+}
+.noise_5:nth-of-type(2) .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 67% 30%, #ccc, var(--blue));
+  mix-blend-mode: multiply;
+}
+.noise_5:nth-of-type(3) .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 67% 30%, #ccc, var(--green));
+  mix-blend-mode: multiply;
+}
+.noise_5:nth-of-type(4) .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 67% 30%, #ccc, var(--yellow));
+  mix-blend-mode: multiply;
+}
+.noise_5:nth-of-type(5) .ball-light {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 67% 30%, #ccc, var(--red));
+  mix-blend-mode: multiply;
+}
+</style>
+
+<div class="box">
+  <h2>基础：球体</h2>
+  <div class="noises">
+    <div class="noise noise_5">
+      <div class="ground"><div class="ground-shadow"></div></div>
+      <div class="ball">
+        <div class="isolate">
+          <div class="ball-shadow"></div>
+          <div class="ball-light"></div>
+        </div>
+      </div>
+    </div>
+    <div class="noise noise_5">
+      <div class="ground"><div class="ground-shadow"></div></div>
+      <div class="ball">
+        <div class="isolate">
+          <div class="ball-shadow"></div>
+          <div class="ball-light"></div>
+        </div>
+      </div>
+    </div>
+    <div class="noise noise_5">
+      <div class="ground"><div class="ground-shadow"></div></div>
+      <div class="ball">
+        <div class="isolate">
+          <div class="ball-shadow"></div>
+          <div class="ball-light"></div>
+        </div>
+      </div>
+    </div>
+    <div class="noise noise_5">
+      <div class="ground"><div class="ground-shadow"></div></div>
+      <div class="ball">
+        <div class="isolate">
+          <div class="ball-shadow"></div>
+          <div class="ball-light"></div>
+        </div>
+      </div>
+    </div>
+    <div class="noise noise_5">
+      <div class="ground"><div class="ground-shadow"></div></div>
+      <div class="ball">
+        <div class="isolate">
+          <div class="ball-shadow"></div>
+          <div class="ball-light"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+span {
+  line-height: 2em;
+  color: #03c03c8e;
+}
+.container {
+  box-sizing: border-box;
+  max-width: 1024px;
+  padding: 20px;
+  text-align: center;
+}
+.item {
+  position: relative;
+  display: inline-block;
+  margin: 20px 35px;
+  width: 130px;
+  height: 130px;
+  background-color: #ffecd2;
+  box-shadow: -5px 18px 25px -15px;
+  overflow: hidden;
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  -ms-interpolation-mode: nearest-neighbor;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: pixelated;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
+}
+.item::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 400%;
+  -webkit-mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 5%, #000 80%) 0 0/50% 100%;
+  mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 5%, #000 80%) 0 0/50% 100%;
+}
+.item:hover {
+  transform: scale(1.05);
+}
+.item:hover.item::before, .item:hover.item::after {
+  -webkit-animation: spin-round 3.5s linear infinite;
+          animation: spin-round 3.5s linear infinite;
+}
+.item:active {
+  -webkit-animation: hue-rotate 7s infinite;
+          animation: hue-rotate 7s infinite;
+}
+.item--sphere {
+  border-radius: 50%;
+}
+.item--egg {
+  width: 100.1px;
+  border-radius: 50% 50% 50% 50%/60% 60% 40% 40%;
+}
+.item--pudding {
+  width: 130px;
+  height: 130px;
+  border-radius: 50% 50% 10% 10%;
+}
+.item--pudding::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  display: block;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 400%;
+  -webkit-mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 55%, #000 85%) 0 0/50% 100%;
+  mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 55%, #000 85%) 0 0/50% 100%;
+}
+.item--droplet {
+  width: 100.1px;
+  height: 100.1px;
+  border-radius: 5% 100% 50% 65%/5% 65% 50% 100%;
+  transform: rotate(45deg);
+  box-shadow: 5px 18px 25px -15px;
+}
+.item--droplet:hover {
+  transform: rotate(45deg) scale(1.05);
+}
+.item--vase {
+  position: relative;
+  width: 80px;
+  height: 130px;
+  border-radius: 40% 40% 70% 70%/100%;
+}
+.item--vase::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  display: block;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 400%;
+  -webkit-mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 55%, #000 90%) 0 0/50% 100%;
+  mask: url('./images/noise.png'), radial-gradient(circle at 50% 0, transparent 55%, #000 90%) 0 0/50% 100%;
+}
+.item--cell {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  color: #ff4d5d;
+  background: radial-gradient(circle at 100% 0, #ffa878 5%, transparent 75%), #ff4d5d;
+}
+.item--cell::before {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 0 75%, transparent 20%, #98000e 65%);
+  -webkit-mask: url('./images/noise.png'), radial-gradient(circle at 50%, transparent 25%, #000 75%);
+  mask: url('./images/noise.png'), radial-gradient(circle at 50%, transparent 25%, #000 75%);
+}
+.item--cell:hover {
+  -webkit-animation: spin-flat-thick 3.5s linear infinite;
+          animation: spin-flat-thick 3.5s linear infinite;
+}
+.item--cell:hover.item--cell::before {
+  -webkit-animation: spin-flat 3.5s linear infinite;
+          animation: spin-flat 3.5s linear infinite;
+}
+.item--cell:hover:active {
+  -webkit-animation: spin-flat-thick 3.5s linear infinite, hue-rotate 7s linear infinite;
+          animation: spin-flat-thick 3.5s linear infinite, hue-rotate 7s linear infinite;
+}
+.item--color1 {
+  color: #7f5fff;
+}
+.item--color1::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #7f5fff 65%);
+}
+.item--color2 {
+  color: #fa709a;
+}
+.item--color2::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #fa709a 65%);
+}
+.item--color3 {
+  color: #ff9673;
+}
+.item--color3::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #ff9673 65%);
+}
+.item--color4 {
+  color: #fec440;
+}
+.item--color4::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #fec440 65%);
+}
+.item--color5 {
+  color: #3d1635;
+  background-color: #ffecd2;
+}
+.item--color5::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 15%, #e7627d 45%);
+}
+.item--color5::after {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 50%, #3d1635 75%);
+}
+.item--color6 {
+  background-color: #72f9c1;
+  color: #5193ff;
+}
+.item--color6::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #5193ff 65%);
+}
+.item--color7 {
+  color: #5e21d6;
+  background-color: #fec440;
+}
+.item--color7::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 15%, #fd2472 45%);
+}
+.item--color7::after {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 50%, #5e21d6 75%);
+}
+.item--color8 {
+  color: #222;
+}
+.item--color8::before {
+  background: repeat-x 100% 0/50% 100% radial-gradient(circle at 50% 0, transparent 25%, #222 65%);
+}
+@-webkit-keyframes spin-round {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes spin-round {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@-webkit-keyframes spin-flat {
+  0% {
+    transform: translate(-50%, -50%) rotateY(0);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotateY(90deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateY(180deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotateY(270deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateY(360deg);
+  }
+}
+@keyframes spin-flat {
+  0% {
+    transform: translate(-50%, -50%) rotateY(0);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotateY(90deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateY(180deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotateY(270deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateY(360deg);
+  }
+}
+@-webkit-keyframes spin-flat-thick {
+  0% {
+    transform: scale(1.05) rotateY(0);
+  }
+  25% {
+    transform: scale(1.05) rotateY(75deg);
+  }
+  50% {
+    transform: scale(1.05) rotateY(0);
+    background: radial-gradient(circle at 0 0, #ffa878 5%, transparent 75%), #ff4d5d;
+  }
+  75% {
+    transform: scale(1.05) rotateY(75deg);
+  }
+  100% {
+    transform: scale(1.05) rotateY(0);
+    background: radial-gradient(circle at 100% 0, #ffa878 5%, transparent 75%), #ff4d5d;
+  }
+}
+@keyframes spin-flat-thick {
+  0% {
+    transform: scale(1.05) rotateY(0);
+  }
+  25% {
+    transform: scale(1.05) rotateY(75deg);
+  }
+  50% {
+    transform: scale(1.05) rotateY(0);
+    background: radial-gradient(circle at 0 0, #ffa878 5%, transparent 75%), #ff4d5d;
+  }
+  75% {
+    transform: scale(1.05) rotateY(75deg);
+  }
+  100% {
+    transform: scale(1.05) rotateY(0);
+    background: radial-gradient(circle at 100% 0, #ffa878 5%, transparent 75%), #ff4d5d;
+  }
+}
+@-webkit-keyframes hue-rotate {
+  from {
+    filter: hue-rotate(360deg);
+  }
+  to {
+    filter: hue-rotate(0deg);
+  }
+}
+@keyframes hue-rotate {
+  from {
+    filter: hue-rotate(360deg);
+  }
+  to {
+    filter: hue-rotate(0deg);
+  }
+}
+</style>
+
+<div class="box">
+  <h2>基础：更多形状</h2>
+  <div class="noises">
+    <div class="noise_9">
+      <p><span>点击或触摸查看动画效果</span></p>
+      <div class="item item--sphere item--color1"></div>
+      <div class="item item--sphere item--color2"></div>
+      <div class="item item--sphere item--color3"></div>
+      <div class="item item--sphere item--color4"></div>
+      <div class="item item--pudding item--color5"></div>
+      <div class="item item--droplet item--color6"></div>
+      <div class="item item--vase item--color7"></div>
+      <div class="item item--egg item--color8"></div>
+      <div class="item item--cell"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+.noise_7 {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  margin: auto;
+}
+.noise_7 .circle {
+  width: 400px;
+  height: 400px;
+  filter: contrast(145%) brightness(650%) invert(100%);
+  mix-blend-mode: screen;
+}
+.noise_7 .noise-1 {
+  position: absolute;
+  top: 0;
+  left: -10%;
+  background: radial-gradient(circle at 50% 50%, rgba(0,255,255,1), rgba(0,0,0,0)), url("./images/noise_3.svg");
+}
+.noise_7 .noise-2 {
+  position: absolute;
+  left: 10%;
+  top: -30px;
+  background: radial-gradient(circle at 50% 50%, rgba(255,0,255,1), rgba(0,0,0,0)), url("./images/noise_3.svg");
+}
+.noise_7 .noise-3 {
+  position: absolute;
+  top: 50px;
+  left: 4%;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,0,1), rgba(0,0,0,0)), url("data:image/svg+xml,%3Csvg viewBox='0 dd 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+</style>
+
+<div class="box">
+  <h2>三原色</h2>
+  <div class="noises noises_7">
+    <div class="noise_7">
+      <div class="circle noise-1"></div>
+      <div class="circle noise-2"></div>
+      <div class="circle noise-3"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+.noise_8 {
+  position: relative;
+  width: 1000px;
+  height: 1000px;
+  margin: 0 auto;
+}
+.noise_8 .noise {
+  width: 100% !important;
+  height: 100% !important;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  filter: contrast(145%) brightness(650%) invert(100%);
+  mix-blend-mode: screen;
+}
+@media all and (-webkit-min-device-pixel-ratio:0) and (min-resolution: .001dpcm) {
+  .noise_8 .noise {
+    filter: contrast(125%) brightness(650%) invert(100%);
+    mix-blend-mode: color-dodge;
+  }
+}
+.noise_8 .center {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.noise_8 .circle {
+  width: 200px;
+  height: 200px;
+  background-color: beige;
+  border-radius: 50%;
+}
+</style>
+
+<div class="box box_8">
+  <h2>无题</h2>
+  <div class="noises">
+    <div class="noise_8">
+      <div class="noise"></div>
+      <div class="center">
+        <div class="circle">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  footer {
+    padding: 36px 0;
+  }
+  footer a {
+    color: rgba(255, 255, 255, .6);
+    font-size: 16px;
+    text-decoration: none;
+    transition: color .25s ease-in-out;
+  }
+  footer .github {
+    height: 64px;
+    width: 64px;
+    margin: 0 auto 8px;
+  }
+  footer:hover a {
+    color: #03c03c;
+  }
+</style>
+<footer>
+  <a href='https://github.com/dragonir' target='_blank' rel='noreferrer'>
+  <svg class="github" aria-hidden='true' viewBox='0 0 16 16' version='1.1' data-view-component='true'>
+    <path fill='#FFFFFF' fillRule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+  </svg>
+  <p>dragonir</p>
+</a>
+</footer>
+</body>
+</html>
